@@ -8,16 +8,16 @@ using std::exception;
 
 static const string infixException[] = { "MissingLeftParen", "MissingRightParen", "UnknownOperator", "TooLongCalculation" };
 static const string postfixException[] = { "LackOfValues", "TooManyValues", "DividedByZero",
-"UnknownOperator", "WrongSixteen_Bit", "WrongTwo_Bit" };
+"UnknownOperator", "WrongHexadecimal", "WrongBinary" };
 
 class Converter {
 public:
-	virtual int sixteen_bit_Convert(char* str) = 0;
-	virtual int two_bit_Convert(char* str) = 0;
+	virtual int hexa_Convert(char* str) = 0;
+	virtual int binary_Convert(char* str) = 0;
 };
-class Sixteen_Bit_Converter : public Converter {
+class Hexa_Converter : public Converter {
 public:
-	int sixteen_bit_Convert(char* str) override {
+	int hexa_Convert(char* str) override {
 		if (str[0] != '0') {
 			throw postfixException[4];
 		}
@@ -78,16 +78,16 @@ public:
 		}
 		return value;
 	}
-	int two_bit_Convert(char* str) override {
+	int binary_Convert(char* str) override {
 		return 0;
 	}
 };
-class Two_Bit_Converter : public Converter {
+class Binary_Converter : public Converter {
 public:
-	int sixteen_bit_Convert(char* str) override {
+	int hexa_Convert(char* str) override {
 		return 0;
 	}
-	int two_bit_Convert(char* str) override {
+	int binary_Convert(char* str) override {
 		if (str[0] != '0') {
 			throw postfixException[5];
 		}
@@ -113,18 +113,18 @@ public:
 
 	CalculatorAdapter(string calcType) {
 		if (!calcType.compare("sixteen")) {
-			converter = new Sixteen_Bit_Converter();
+			converter = new Hexa_Converter();
 		}
 		else if (!calcType.compare("two")) {
-			converter = new Two_Bit_Converter();
+			converter = new Binary_Converter();
 		}
 	}
 	int convert(string calcType, char* str) {
 		if (!calcType.compare("sixteen")) {
-			return converter->sixteen_bit_Convert(str);
+			return converter->hexa_Convert(str);
 		}
 		else if (!calcType.compare("two")) {
-			return converter->two_bit_Convert(str);
+			return converter->binary_Convert(str);
 		}
 	}
 };
@@ -293,13 +293,13 @@ public:
 					formatPostfix[y] = formatCurrent;//formatPostfix에 정수 저장
 					y++;
 					x = 0;
+					j++;
 				}
 				char* formatCurrent = new char[2];
 				formatCurrent[0] = postfix()[i];
 				formatCurrent[1] = '\0';
 				formatPostfix[y] = formatCurrent;
 				y++;
-				j++;
 				continue;
 			}
 			if (GetPrecedence(postfix()[i]) == 5) {//16비트나 2비트인 경우
